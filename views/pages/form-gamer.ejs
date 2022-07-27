@@ -14,25 +14,99 @@
     </head>
 
     <body>
+
         <div class="page">
+
+            <div class="loading hide" id="loading">
+                <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+            </div>
+
             <div class="box">
 
+                <div class="box-card" id="card-1">
+                    <p>Vamos começar o teste? Coisa rápida, cerca de 1 minuto. Clica em próxima e bora!</p>
+                </div>
+
                 <% combination.forEach((item, i) => { %>
-                    <div class="box-card">
+                    <div class="box-card hide" id="card<%= i %>">
                         <p>O que mais te define como pessoa?</p>
                         <div class="form-check">
-                            <input type="radio" class="form-check-input" name="box-radio-<%= i %>">
+                            <input type="radio" class="form-check-input" name="box-radio-<%= i %>" id="check-section-<%= i %>-<%= item[0].id %>">
                             <label class="form-check-label"><%= item[0].word %></label>
                         </div>
                         <div class="form-check">
-                            <input type="radio" class="form-check-input" name="box-radio-<%= i %>">
+                            <input type="radio" class="form-check-input" name="box-radio-<%= i %>" id="check-section-<%= i %>-<%= item[1].id %>">
                             <label class="form-check-label"><%= item[1].word %></label>
                         </div>
                     </div>
                 <% }) %>
+
+                <div class="next-button" onclick="next()">
+                    Próximo
+                </div>
                 
             </div>
         </div>
     </body>
+
+    <script>
+
+        const state = {currentSection: -1, maxSection: 9, minSection: -1, selected: []};
+        function getSections() {
+            const sections = [];
+            for(let i = state.minSection; i <= state.maxSection; i++) {
+                sections.push({id: `card${i}`, number: i});
+            }
+            return sections;
+        }
+
+        function updateCheck(nextSection, executeRender) {
+            const node = document.querySelector(`input[name="box-radio-${state.currentSection}"]:checked`);
+            if(node == null) {
+                alert("Opa, não avance antes de selecionar a melhor opção.");
+            } else {
+                const parts = node.id.split("-");
+                const idWord = parseInt(parts[parts.length - 1]);
+                state.selected.push(idWord);
+
+                if(executeRender) renderCard(nextSection);
+            }
+        }
+
+        function renderCard(nextSection) {
+            getSections().forEach(section => {
+                const node = document.getElementById(section.id);
+                node.classList.add("hide");
+                if(section.number == nextSection)
+                    node.classList.remove("hide");
+            });
+            state.currentSection = nextSection;
+        }
+
+        function showLoading() {
+            const node = document.getElementById("loading");
+            node.classList.remove("hide");
+        }
+
+        function next() {
+            const nextSection = state.currentSection + 1;
+            if(state.currentSection == state.minSection) {
+                renderCard(nextSection);
+
+            } else if(nextSection < state.maxSection) {
+                updateCheck(nextSection, true);
+
+            } else if(nextSection == state.maxSection) {
+                document.getElementsByClassName("next-button")[0].innerHTML = "Calcular";
+                updateCheck(nextSection, true);
+
+            } else {
+                console.log("Envia requisição de cálculo");
+                updateCheck(nextSection, false);
+                showLoading();
+            }
+        }
+
+    </script>
 
 </html>
