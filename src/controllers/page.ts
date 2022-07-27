@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { calcByWords } from "../core/bigFive";
 
 export default class PageController {
 
@@ -15,7 +16,17 @@ export default class PageController {
             [{word: "Analítica", id: 5}, {word: "Criativa", id: 4}],
             [{word: "Empática", id: 2}, {word: "Confiante", id: 3}]
         ];
-        response.render("pages/form-gamer", {combination: words});
+        return response.render("pages/form-gamer", {combination: words});
+    }
+
+    static async calculateByPositiveWords(request: Request, response: Response) {
+        const ids = request.body.words;
+        const result = calcByWords(ids, 4);
+        
+        return response.send({
+            statusCode: 200,
+            data: result
+        });
     }
 
 }

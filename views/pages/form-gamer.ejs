@@ -41,7 +41,9 @@
                     </div>
                 <% }) %>
 
-                <div class="next-button" onclick="next()">
+                <div class="box-card hide" id="card<%= combination.length %>"></div>
+
+                <div class="next-button" onclick="next()" id="next-button">
                     Próximo
                 </div>
                 
@@ -51,7 +53,7 @@
 
     <script>
 
-        const state = {currentSection: -1, maxSection: 9, minSection: -1, selected: []};
+        const state = {currentSection: -1, maxSection: 10, minSection: -1, selected: []};
         function getSections() {
             const sections = [];
             for(let i = state.minSection; i <= state.maxSection; i++) {
@@ -88,22 +90,56 @@
             node.classList.remove("hide");
         }
 
-        function next() {
+        function hideLoading() {
+            const node = document.getElementById("loading");
+            node.classList.add("hide");
+        }
+
+        async function calculate() {
+            // Recupera dados do servidor
+            const req = await fetch("/calc", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({words: state.selected})
+            });
+            const res = await req.json();
+
+            // Atualiza a visão
+            const node = document.getElementById(`card${state.maxSection}`);
+            while(node.firstChild) {
+                node.removeChild(node.firstChild);
+            }
+
+            res.data.description.split("\n").forEach(text => {
+                let p = document.createElement("p");
+                p.appendChild(document.createTextNode(text));
+                node.appendChild(p);
+            });
+            
+            hideLoading();
+            document.getElementById("next-button").classList.add("hide");
+        }
+
+        async function next() {
             const nextSection = state.currentSection + 1;
             if(state.currentSection == state.minSection) {
                 renderCard(nextSection);
 
-            } else if(nextSection < state.maxSection) {
+            } else if(nextSection < state.maxSection - 1) {
                 updateCheck(nextSection, true);
 
-            } else if(nextSection == state.maxSection) {
+            } else if(nextSection == state.maxSection - 1) {
                 document.getElementsByClassName("next-button")[0].innerHTML = "Calcular";
                 updateCheck(nextSection, true);
 
             } else {
                 console.log("Envia requisição de cálculo");
-                updateCheck(nextSection, false);
+                updateCheck(nextSection, true);
                 showLoading();
+                await calculate();
             }
         }
 
