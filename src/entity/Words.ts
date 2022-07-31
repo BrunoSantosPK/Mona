@@ -1,5 +1,6 @@
 import { Traits } from "./Trait";
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { FormWords } from "./FormWords";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 
 @Entity({ name: "Words" })
 export class Words {
@@ -16,5 +17,8 @@ export class Words {
 
     @Column({ type: "bool", name: "Positive" })
     Positive: boolean;
+
+    @OneToMany(() => FormWords, formWord => formWord.WordId)
+    FormWords: FormWords[];
 
 }

@@ -1,8 +1,10 @@
 import path from "path";
 import { config } from "dotenv";
 import { DataSource } from "typeorm";
+import { Forms } from "./entity/Forms";
 import { Words } from "./entity/Words";
 import { Traits } from "./entity/Trait";
+import { FormWords } from "./entity/FormWords";
 
 config({ path: path.join(__dirname, "..", "config", ".env") });
 
@@ -14,7 +16,7 @@ const AppDataSource = new DataSource({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     synchronize: true,
-    entities: [Traits, Words],
+    entities: [Traits, Words, Forms, FormWords],
     ssl: true,
     extra: {
         ssl: {

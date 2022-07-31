@@ -1,5 +1,13 @@
 import { Request, Response } from "express";
 import { calcByWords } from "../core/bigFive";
+import AppDataSource from "../data-source";
+import { FormWords } from "../entity/FormWords";
+
+type ReturnGetFormById = {
+    success: boolean,
+    message?: string,
+    data?: FormWords[]
+};
 
 export default class PageController {
 
@@ -27,6 +35,20 @@ export default class PageController {
             statusCode: 200,
             data: result
         });
+    }
+
+    static async getFormById(formId: number): Promise<ReturnGetFormById> {
+        try {
+            await AppDataSource.initialize();
+            const data = await AppDataSource.manager.find(FormWords, {
+                where: { FormId: formId },
+                relations: { WordId: true }
+            });
+            return { success: true, data };
+            
+        } catch(error: any) {
+            return { success: false, message: error.message };
+        }
     }
 
 }
