@@ -18,7 +18,21 @@ describe("Gerenciamento de formulários", () => {
         it("Tenta acessar formulário não existente no banco de dados", async() => {
             const result = await FormController.getFormById(0);
             expect(result.success).toBe(false);
-            expect(result.message).toBeDefined();
+            expect(result.message).toBe("Questionário inválido.");
+        });
+
+    });
+
+    describe("GET Acesso das páginas para formulário de tipo de jogador", () => {
+
+        it("Recupera página de questionário para tipo de jogador", async() => {
+            const result = await request(app).get("/");
+            expect(result.statusCode).toBe(200);
+        });
+
+        it("Falha na criação da página de questionário de tipo de jogador", async() => {
+            const result = await request(app).get("/?form=0");
+            expect(result.statusCode).toBe(404);
         });
 
     });

@@ -12,7 +12,7 @@ type RowForm = {
 type ReturnGetFormById = {
     success: boolean,
     message?: string,
-    data?: RowForm[]
+    data?: Array<RowForm>
 };
 
 export default class FormController {
@@ -21,7 +21,7 @@ export default class FormController {
         const result: ReturnGetFormById = { success: true };
 
         try {
-            // Reciupera dados
+            // Recupera dados
             await AppDataSource.initialize();
             const data = await AppDataSource.createQueryBuilder(FormWords, "FormWords")
                 .leftJoinAndSelect("FormWords.WordId", "Words")
@@ -40,7 +40,7 @@ export default class FormController {
                 wordName: item.Words_Name
             }));
 
-            result.data = data;
+            result.data = send;
             
         } catch(error: any) {
             result.success = false;
