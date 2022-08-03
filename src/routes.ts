@@ -1,9 +1,11 @@
 import express from "express";
+import PageController from "./controllers/page";
+import FormController from "./controllers/form";
+
 const routes = express.Router();
 
-import PageController from "./controllers/page";
-
 routes.get("/", PageController.formGamerTypes);
+routes.post("/calculate", FormController.calculateByWords)
 //routes.post("/calc", PageController.calculateByPositiveWords);
 
 export default routes;

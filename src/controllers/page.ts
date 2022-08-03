@@ -49,14 +49,4 @@ export default class PageController {
         }
     }
 
-    /*static async calculateByPositiveWords(request: Request, response: Response) {
-        const ids = request.body.words;
-        const result = calcByWords(ids, 4);
-        
-        return response.send({
-            statusCode: 200,
-            data: result
-        });
-    }*/
-
 }

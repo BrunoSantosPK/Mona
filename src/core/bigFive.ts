@@ -1,3 +1,55 @@
+import { RowQuestionGroup } from "../types/form";
+
+export default class BigFive {
+
+    static calculate(questions: Array<RowQuestionGroup>, responses: Array<number>) {}
+
+    static validateSelectWords(questions: Array<RowQuestionGroup>, responses: Array<number>) {
+        const valids: Array<boolean> = [];
+        responses.forEach(item => {
+            let exist = false;
+            for(let i = 0; i < questions.length; i++) {
+                if(questions[i].wordId == item) {
+                    exist = true;
+                    break;
+                }
+            }
+            valids.push(exist);
+        });
+
+        if(valids.find(element => element == false) == undefined) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static validateConsistenceSelectWords(questions: Array<RowQuestionGroup>, responses: Array<number>) {
+        const traits: Array<{traitId: number, total: number, select: number}> = [];
+        questions.forEach(item => {
+            let element = traits.find(iteration => iteration.traitId == item.traitId);
+            let select = responses.filter(iteration => iteration == item.wordId).length;
+            if(element == undefined) {
+                traits.push({ traitId: item.traitId, total: 1, select });
+            } else {
+                element.total = element.total + 1;
+                element.select = element.select + select;
+            }
+        });
+
+        // Verifica se a quantidade selecionada é maior que a quantidade total possível
+        let valid = true;
+        traits.forEach(item => {
+            if(item.select > item.total) {
+                valid = false;
+            }
+        });
+
+        return valid;
+    }
+
+}
+
 const words = [
     {word: "Comunicativa", id: 1, direction: "positive", traitId: 1},
     {word: "Empática", id: 2, direction: "positive", traitId: 3},

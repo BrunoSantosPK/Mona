@@ -36,4 +36,36 @@ describe("Gerenciamento de formulários", () => {
         });
 
     });
+
+    describe("POST Realiza o cálculo de tipo de jogador", () => {
+        
+        it("Falha - Envio de palavras não presentes no questionário", async() => {
+            const result = await request(app).post("/calculate").send({
+                ip: "adfasdfa",
+                formId: 1,
+                duration: 360,
+                words: [5, 9, 2, 6, 14, 3, 7, 12, 4, 25]
+                //words: [5, 9, 2, 6, 14, 3, 7, 12, 4, 8]
+            });
+            expect(result.body).toEqual(expect.objectContaining({
+                statusCode: 444,
+                message: "As palavras enviadas não pertencem ao questionário."
+            }));
+        });
+
+        it("Falha - Seleção de palavra em excesso de um questionário", async() => {
+            const result = await request(app).post("/calculate").send({
+                ip: "adfasdfa",
+                formId: 1,
+                duration: 360,
+                words: [5, 9, 2, 6, 14, 8, 8, 8, 8, 8]
+            });
+            expect(result.body).toEqual(expect.objectContaining({
+                statusCode: 444,
+                message: "As respostas não estão consistentes com o questionário."
+            }));
+        });
+
+    });
+
 });
