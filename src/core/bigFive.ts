@@ -2,7 +2,53 @@ import { RowQuestionGroup } from "../types/form";
 
 export default class BigFive {
 
-    static calculate(questions: Array<RowQuestionGroup>, responses: Array<number>) {}
+    static calculate(questions: Array<RowQuestionGroup>, responses: Array<number>) {
+        // Define or arquétipos a partir dos traços
+        // TODO: transferir essa funcionalidade para as entidades
+        const analysisTraits = [
+            {traitId: 1, positive: true, gamer: "Socializador", score: 0, max: 0},
+            {traitId: 2, positive: true, gamer: "Conquistador", score: 0, max: 0},
+            {traitId: 3, positive: false, gamer: "Competidor", score: 0, max: 0},
+            {traitId: 4, positive: true, gamer: "Explorador", score: 0, max: 0}
+        ];
+
+        // Encontra a pontuação máxima de cada score, dado o questionário informado
+        questions.forEach(question => {
+            let analysis = analysisTraits.find(element => element.traitId == question.traitId);
+            if(analysis !== undefined)
+                analysis.max = analysis.max + 1;
+        });
+
+        // Compila a pontuação no questionario de acordo com as respostas
+        responses.forEach(wordId => {
+            let question = questions.find(element => element.wordId == wordId);
+            let analysis = analysisTraits.find(element => element.traitId == question?.traitId);
+            if(analysis !== undefined)
+                analysis.score = analysis.score + 1;
+        });
+
+        // Para traços no eixo negativo, faz a devida conversão
+        analysisTraits.forEach(analysis => {
+            if(!analysis.positive)
+                analysis.score = 1 - analysis.score
+        })
+
+        // Ordena os traços
+        for(let i = 0; i < analysisTraits.length; i++) {
+            for(let j = i + 1; j < analysisTraits.length; j++) {
+                if(analysisTraits[i].score < analysisTraits[j].score) {
+                    let pivot = analysisTraits[i];
+                    analysisTraits[i] = analysisTraits[j];
+                    analysisTraits[j] = pivot;
+                }
+            }
+        }
+
+        return {
+            gamerType: analysisTraits[0].gamer,
+            gamerDescription: `Você é um ${analysisTraits[0].gamer}`
+        };
+    }
 
     static validateSelectWords(questions: Array<RowQuestionGroup>, responses: Array<number>) {
         const valids: Array<boolean> = [];

@@ -30,7 +30,10 @@ export default class FormController {
             if(!validConsistence)
                 throw new Error("As respostas não estão consistentes com o questionário.");
 
-            return response.json(send.getJSON());
+            // Calcula e recupera o principal arquétipo de jogador
+            const resultCalc = BigFive.calculate(questions.data, words);
+            send.setAttr("gamerType", resultCalc.gamerType);
+            send.setAttr("gamerDescription", resultCalc.gamerDescription);
 
         } catch(error: any) {
             send.setStatus(444);

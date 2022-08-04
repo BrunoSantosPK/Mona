@@ -60,9 +60,27 @@ describe("Gerenciamento de formulários", () => {
                 duration: 360,
                 words: [5, 9, 2, 6, 14, 8, 8, 8, 8, 8]
             });
+
             expect(result.body).toEqual(expect.objectContaining({
                 statusCode: 444,
                 message: "As respostas não estão consistentes com o questionário."
+            }));
+        });
+
+        it("Sucesso - Cálculo correto de um tipo de jogador", async() => {
+            const result = await request(app).post("/calculate").send({
+                ip: "adfasdfa",
+                formId: 1,
+                duration: 360,
+                words: [1, 2, 3, 4, 9, 11, 20, 7, 18, 8]
+            });
+            
+            expect(result.body).toEqual(expect.objectContaining({
+                statusCode: 200,
+                data: {
+                    gamerType: "Socializador",
+                    gamerDescription: "Você é um Socializador"
+                }
             }));
         });
 
