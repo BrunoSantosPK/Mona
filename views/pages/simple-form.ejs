@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta charset="utf-8">
+        <link href="/public/styles.css" rel="stylesheet" >
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Perfil de Jogador</title>
+        <link rel="canonical" href="/">
+        <meta name="description" content="Realize seu teste de perfil e descubra o seu arquétipo de jogador. É rápido e grátis!">
+        <meta name="keywords" content="Gamificação, Explorador, Conquistador, Competitivo, Socializador, Perfil Comportamental">
+    </head>
+
+    <body>
+
+        <div class="slide slide-content" id="slide-1" rule="next-page">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque facilisis, risus non accumsan ultricies, sem mauris malesuada purus, eget scelerisque metus diam ut enim. Sed eget mattis mauris. Nam ornare libero vel urna suscipit malesuada. Cras ut erat maximus, molestie libero ac, lobortis augue. Maecenas nibh felis, condimentum sagittis gravida vel, tempor at diam.</p>
+            <button onclick="action(1)">Próximo</button>
+        </div>
+
+        <div class="slide slide-content hide" id="slide-2" rule="validate-next">
+            <p>Aliquam varius lacus orci, at aliquet orci aliquam vitae. Nunc efficitur efficitur libero, in maximus mauris laoreet non.</p>
+            <button onclick="action(2)">Próximo</button>
+        </div>
+
+        <div class="slide slide-content hide" id="slide-3" rule="validate-last">
+            <p>Donec ac malesuada justo. Sed eu porta eros. Duis ultrices consequat ullamcorper. Phasellus ac fringilla nunc. Sed nec pretium dolor. Proin tristique pharetra felis, ut finibus orci fringilla quis. Nam mollis eu odio in laoreet. Suspendisse suscipit leo eu dui elementum, ut sagittis diam tincidunt.</p>
+            <button onclick="action(3)">Próximo</button>
+        </div>
+
+        <div class="slide slide-content hide" id="slide-4" rule="validate-send">
+            <p>Donec ac malesuada justo. Sed eu porta eros. Duis ultrices consequat ullamcorper. Phasellus ac fringilla nunc. Sed nec pretium dolor. Proin tristique pharetra felis, ut finibus orci fringilla quis. Nam mollis eu odio in laoreet. Suspendisse suscipit leo eu dui elementum, ut sagittis diam tincidunt.</p>
+            <button onclick="action(4)">Finalizar</button>
+        </div>
+
+    </body>
+
+    <script>
+
+        // Sistemas de regras
+        const rules = {
+            "next-page": currentId => nextPage(currentId),
+            "validate-next": currentId => {
+                validate(currentId);
+                nextPage(currentId);
+            },
+            "validate-last": currentId => {
+                console.log("passando para a última página");
+                validate(currentId);
+                nextPage(currentId);
+            },
+            "validate-send": currentId => {
+                validate(currentId)
+            }
+        };
+
+        function action(currentId) {
+            const currentDiv = document.getElementById(`slide-${currentId}`);
+            const rule = currentDiv.getAttribute("rule");
+            rules[rule](currentId);
+        }
+
+        function validate(currentDiv) {
+            console.log("passou pela função de validação, atualmente no slide " + currentDiv)
+        }
+
+        function nextPage(currentId) {
+            const currentDiv = document.getElementById(`slide-${currentId}`);
+            const nextDiv = document.getElementById(`slide-${parseInt(currentId) + 1}`);
+
+            nextDiv.classList.remove("hide");
+            currentDiv.classList.add("slide-bottom-to-top-hide");
+            nextDiv.classList.add("slide-bottom-top-top-show");
+
+            setTimeout(() => {
+                currentDiv.classList.add("hide");
+                currentDiv.classList.remove("slide-bottom-to-top-hide");
+                nextDiv.classList.remove("slide-bottom-top-top-show")
+            }, 800);
+        }
+
+    </script>
+
+</html>

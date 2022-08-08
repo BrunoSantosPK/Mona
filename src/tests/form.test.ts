@@ -67,7 +67,7 @@ describe("Gerenciamento de formulários", () => {
             }));
         });
 
-        it("Sucesso - Cálculo correto de um tipo de jogador", async() => {
+        it("Sucesso - Cálculo correto do tipo Socializador", async() => {
             const result = await request(app).post("/calculate").send({
                 ip: "adfasdfa",
                 formId: 1,
@@ -77,10 +77,49 @@ describe("Gerenciamento de formulários", () => {
             
             expect(result.body).toEqual(expect.objectContaining({
                 statusCode: 200,
-                data: {
-                    gamerType: "Socializador",
-                    gamerDescription: "Você é um Socializador"
-                }
+                data: { gamerType: "Socializador", gamerDescription: "Você é um Socializador" }
+            }));
+        });
+
+        it("Sucesso - Cálculo correto do tipo Conquistador", async() => {
+            const result = await request(app).post("/calculate").send({
+                ip: "adfasdfa",
+                formId: 1,
+                duration: 360,
+                words: [5, 9, 19, 6, 14, 3, 7, 18, 4, 8]
+            });
+            
+            expect(result.body).toEqual(expect.objectContaining({
+                statusCode: 200,
+                data: { gamerType: "Conquistador", gamerDescription: "Você é um Conquistador" }
+            }));
+        });
+
+        it("Sucesso - Cálculo correto do tipo Explorador", async() => {
+            const result = await request(app).post("/calculate").send({
+                ip: "adfasdfa",
+                formId: 1,
+                duration: 360,
+                words: [1, 13, 19, 11, 14, 3, 15, 18, 16, 17]
+            });
+            
+            expect(result.body).toEqual(expect.objectContaining({
+                statusCode: 200,
+                data: { gamerType: "Explorador", gamerDescription: "Você é um Explorador" }
+            }));
+        });
+
+        it("Sucesso - Cálculo correto do tipo Competidor", async() => {
+            const result = await request(app).post("/calculate").send({
+                ip: "adfasdfa",
+                formId: 1,
+                duration: 360,
+                words: [1, 13, 19, 6, 14, 3, 15, 18, 4, 8]
+            });
+            
+            expect(result.body).toEqual(expect.objectContaining({
+                statusCode: 200,
+                data: { gamerType: "Competidor", gamerDescription: "Você é um Competidor" }
             }));
         });
 

@@ -6,6 +6,5 @@ const routes = express.Router();
 
 routes.get("/", PageController.formGamerTypes);
 routes.post("/calculate", FormController.calculateByWords)
-//routes.post("/calc", PageController.calculateByPositiveWords);
 
 export default routes;

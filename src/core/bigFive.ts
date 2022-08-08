@@ -24,7 +24,7 @@ export default class BigFive {
             let question = questions.find(element => element.wordId == wordId);
             let analysis = analysisTraits.find(element => element.traitId == question?.traitId);
             if(analysis !== undefined)
-                analysis.score = analysis.score + 1;
+                analysis.score = analysis.score + 1 / analysis.max;
         });
 
         // Para traços no eixo negativo, faz a devida conversão
