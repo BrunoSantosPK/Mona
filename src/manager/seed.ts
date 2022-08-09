@@ -1,10 +1,10 @@
 import XLSX from "xlsx";
 import path from "path";
-import { Forms } from "../entity/Forms";
-import { Words } from "../entity/Words";
-import { Traits } from "../entity/Trait";
+import { Forms } from "../models/Forms";
+import { Words } from "../models/Words";
+import { Traits } from "../models/Trait";
 import AppDataSource from "../data-source";
-import { FormWords } from "../entity/FormWords";
+import { FormWords } from "../models/FormWords";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 (async() => {

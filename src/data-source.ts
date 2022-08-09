@@ -1,10 +1,10 @@
 import path from "path";
 import { config } from "dotenv";
 import { DataSource } from "typeorm";
-import { Forms } from "./entity/Forms";
-import { Words } from "./entity/Words";
-import { Traits } from "./entity/Trait";
-import { FormWords } from "./entity/FormWords";
+import { Forms } from "./models/Forms";
+import { Words } from "./models/Words";
+import { Traits } from "./models/Trait";
+import { FormWords } from "./models/FormWords";
 
 config({ path: path.join(__dirname, "..", "config", ".env") });
 

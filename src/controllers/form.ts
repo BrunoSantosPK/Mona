@@ -2,7 +2,7 @@ import BigFive from "../core/bigFive";
 import AppDataSource from "../data-source";
 import { Request, Response } from "express";
 import CustomResponse from "../core/response";
-import { FormWords } from "../entity/FormWords";
+import { FormWords } from "../models/FormWords";
 import { RowQuestionGroup, ReturnGetFormById } from "../types/form";
 
 export default class FormController {

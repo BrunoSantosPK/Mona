@@ -14,7 +14,18 @@
 
     <body>
 
-        <div class="slide slide-content" id="slide-1" rule="next-page">
+        <% slides.forEach((slide, i) => { %>
+            <div class="slide slide-content <%= (i == 0) ? '' : 'hide' %>" rule="<%= slide.state %>" id="slide-<%= i %>">
+                <p><%= slide.text %></p>
+                <% if(slide.showQuestions) { %>
+                    <div word-id="<%= slide.questions.options[0].wordId %>"><%= slide.questions.options[0].word %></div>
+                    <div word-id="<%= slide.questions.options[1].wordId %>"><%= slide.questions.options[1].word %></div>
+                <% } %>
+                <button onclick="action('<%= i %>')"><%= slide.buttonText %></button>
+            </div>
+        <% }) %>
+
+        <!--<div class="slide slide-content" id="slide-1" rule="next-page">
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque facilisis, risus non accumsan ultricies, sem mauris malesuada purus, eget scelerisque metus diam ut enim. Sed eget mattis mauris. Nam ornare libero vel urna suscipit malesuada. Cras ut erat maximus, molestie libero ac, lobortis augue. Maecenas nibh felis, condimentum sagittis gravida vel, tempor at diam.</p>
             <button onclick="action(1)">Próximo</button>
         </div>
@@ -32,7 +43,7 @@
         <div class="slide slide-content hide" id="slide-4" rule="validate-send">
             <p>Donec ac malesuada justo. Sed eu porta eros. Duis ultrices consequat ullamcorper. Phasellus ac fringilla nunc. Sed nec pretium dolor. Proin tristique pharetra felis, ut finibus orci fringilla quis. Nam mollis eu odio in laoreet. Suspendisse suscipit leo eu dui elementum, ut sagittis diam tincidunt.</p>
             <button onclick="action(4)">Finalizar</button>
-        </div>
+        </div>-->
 
     </body>
 
