@@ -12,57 +12,63 @@
         <meta name="keywords" content="Gamificação, Explorador, Conquistador, Competitivo, Socializador, Perfil Comportamental">
     </head>
 
-    <body>
+    <body form-id="<%= idForm %>">
 
         <% slides.forEach((slide, i) => { %>
-            <div class="slide slide-content <%= (i == 0) ? '' : 'hide' %>" rule="<%= slide.state %>" id="slide-<%= i %>">
-                <p><%= slide.text %></p>
-                <% if(slide.showQuestions) { %>
-                    <div word-id="<%= slide.questions.options[0].wordId %>"><%= slide.questions.options[0].word %></div>
-                    <div word-id="<%= slide.questions.options[1].wordId %>"><%= slide.questions.options[1].word %></div>
-                <% } %>
-                <button onclick="action('<%= i %>')"><%= slide.buttonText %></button>
+            <div class="slide <%= (i == 0) ? '' : 'hide' %>" rule="<%= slide.state %>" id="slide-<%= i %>">
+                <div class="slide-content">
+                    <p><%= slide.text %></p>
+                    <% if(slide.showQuestions) { %>
+                        <% slide.questions.options.forEach((item, j) => { %>
+                            <label for="question-<%= slide.questions.groupId %>">
+                                <input
+                                    type="radio"
+                                    id="word-<%= item.wordId %>"
+                                    name="question-<%= slide.questions.groupId %>"
+                                    word-id="<%= item.wordId %>"
+                                >
+                                <%= item.word %>
+                            </label>
+                        <% }) %>
+                    <% } %>
+                    <div class="button" onclick="action('<%= i %>')"><%= slide.buttonText %></div>
+                </div>
             </div>
         <% }) %>
-
-        <!--<div class="slide slide-content" id="slide-1" rule="next-page">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque facilisis, risus non accumsan ultricies, sem mauris malesuada purus, eget scelerisque metus diam ut enim. Sed eget mattis mauris. Nam ornare libero vel urna suscipit malesuada. Cras ut erat maximus, molestie libero ac, lobortis augue. Maecenas nibh felis, condimentum sagittis gravida vel, tempor at diam.</p>
-            <button onclick="action(1)">Próximo</button>
-        </div>
-
-        <div class="slide slide-content hide" id="slide-2" rule="validate-next">
-            <p>Aliquam varius lacus orci, at aliquet orci aliquam vitae. Nunc efficitur efficitur libero, in maximus mauris laoreet non.</p>
-            <button onclick="action(2)">Próximo</button>
-        </div>
-
-        <div class="slide slide-content hide" id="slide-3" rule="validate-last">
-            <p>Donec ac malesuada justo. Sed eu porta eros. Duis ultrices consequat ullamcorper. Phasellus ac fringilla nunc. Sed nec pretium dolor. Proin tristique pharetra felis, ut finibus orci fringilla quis. Nam mollis eu odio in laoreet. Suspendisse suscipit leo eu dui elementum, ut sagittis diam tincidunt.</p>
-            <button onclick="action(3)">Próximo</button>
-        </div>
-
-        <div class="slide slide-content hide" id="slide-4" rule="validate-send">
-            <p>Donec ac malesuada justo. Sed eu porta eros. Duis ultrices consequat ullamcorper. Phasellus ac fringilla nunc. Sed nec pretium dolor. Proin tristique pharetra felis, ut finibus orci fringilla quis. Nam mollis eu odio in laoreet. Suspendisse suscipit leo eu dui elementum, ut sagittis diam tincidunt.</p>
-            <button onclick="action(4)">Finalizar</button>
-        </div>-->
 
     </body>
 
     <script>
 
+        // Gerencia a execução do formulário
+        const control = {
+            formId: parseInt(document.getElementsByTagName("body")[0].getAttribute("form-id")),
+            startTime: new Date(),
+            duration: 0,
+            words: [],
+            ip: ""
+        };
+
         // Sistemas de regras
         const rules = {
-            "next-page": currentId => nextPage(currentId),
-            "validate-next": currentId => {
-                validate(currentId);
+            "next-page": currentId => {
                 nextPage(currentId);
+                control.startTime = new Date();
+            },
+            "validate-next": currentId => {
+                const valid = validate(currentId);
+                if(valid) nextPage(currentId);
+                else alert("Selecione uma opção antes de prosseguir");
             },
             "validate-last": currentId => {
-                console.log("passando para a última página");
-                validate(currentId);
-                nextPage(currentId);
+                const valid = validate(currentId);
+                if(valid) nextPage(currentId);
+                else alert("Selecione uma opção antes de prosseguir");
             },
             "validate-send": currentId => {
-                validate(currentId)
+                const valid = validate(currentId)
+                if(valid) calculate();
+                else alert("Selecione uma opção para finalizar")
             }
         };
 
@@ -72,8 +78,25 @@
             rules[rule](currentId);
         }
 
-        function validate(currentDiv) {
-            console.log("passou pela função de validação, atualmente no slide " + currentDiv)
+        function validate(currentId) {
+            // Acessa o slide e busca os inputs existentes
+            const slide = document.getElementById(`slide-${currentId}`);
+            const inputs = slide.getElementsByTagName("input");
+            const selected = { checked: false, id: 0 };
+
+            // Verifica se algum indicador foi selecionado
+            for(let i = 0; i < inputs.length; i++) {
+                if(inputs[i].checked) {
+                    selected.checked = true;
+                    selected.id = parseInt(inputs[i].getAttribute("word-id"));
+                }
+            }
+
+            if(selected.checked) {
+                control.words.push(selected.id);
+            }
+
+            return selected.checked;
         }
 
         function nextPage(currentId) {
@@ -89,6 +112,38 @@
                 currentDiv.classList.remove("slide-bottom-to-top-hide");
                 nextDiv.classList.remove("slide-bottom-top-top-show")
             }, 800);
+        }
+
+        async function calculate() {
+            try {
+                // Gerencia os dados para enviar ao servidor
+                let req = await fetch("https://api.ipify.org/?format=json");
+                let res = await req.json();
+                
+                control.duration = ((new Date()) - control.startTime) / 1000;
+                control.ip = res.ip;
+
+                // Faz a requisição para cálculo de personalidade
+                req = await fetch("/calculate", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        ip: control.ip,
+                        formId: control.formId,
+                        duration: control.duration,
+                        words: control.words
+                    }),
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    }
+                });
+                res = await req.json();
+
+                console.log(res);
+
+            } catch(error) {
+                alert(error.message);
+            }
         }
 
     </script>

@@ -1,22 +1,20 @@
 /* Reset de CSS */
-* { margin: 0; padding: 0; outline: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; outline: 0; box-sizing: border-box; font-family: "Open Sans", sans-serif; }
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
 
 .hide { display: none; }
-.slide { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #5865F2; }
-.slide-content { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px 20px; }
-
-.slide-from-bottom { animation: fromBottom 0.8s ease-in 0.8 both }
-
+.slide { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #5865F2; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.slide-content { display: flex; flex-direction: column; justify-content: center; padding: 10px 20px; max-width: 430px; }
 .slide-bottom-to-top-hide { animation: bottomToTopHide 0.8s ease-in; }
 .slide-bottom-top-top-show { animation: bottomToTopShow 0.8s ease-in; }
+
+.slide-content p { font-size: 22px; color: #fff; margin-bottom: 10px; }
+.slide-content label { color: #fff; font-size: 20px; margin-bottom: 5px; }
+.slide-content .button { cursor: pointer; background-color: #383838; color: #fff; font-size: 22px; text-align: center; padding: 6px 0px; border-radius: 5px; }
 
 @keyframes bottomToTopHide { 0% { top: 0%; } 100% { top: -100%; } }
 @keyframes bottomToTopShow { 0% { top: 100%; } 100% { top: 0%; } }
 
-@keyframes fromBottom {
-  0% { top: 0%; opacity: 1; }
-  100% { top: -150%; opacity: 0; }
-}
 
 
 
