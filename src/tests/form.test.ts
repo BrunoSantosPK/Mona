@@ -1,9 +1,12 @@
 import app from "../app";
 import request from "supertest";
 import FormController from "../controllers/form";
+import AppDataSource from "../data-source";
 
 describe("Gerenciamento de formulários", () => {
-    //beforeAll(async() => {});
+    beforeAll(async() => {
+        await AppDataSource.initialize();
+    });
 
     //afterAll(async() => {});
 
@@ -74,11 +77,10 @@ describe("Gerenciamento de formulários", () => {
                 duration: 360,
                 words: [1, 2, 3, 4, 9, 11, 20, 7, 18, 8]
             });
-            
-            expect(result.body).toEqual(expect.objectContaining({
-                statusCode: 200,
-                data: { gamerType: "Socializador", gamerDescription: "Você é um Socializador" }
-            }));
+
+            expect(result.body.message).toBe("");
+            expect(result.body.statusCode).toBe(200);
+            expect(result.body.data.gamerType).toBe("Socializador");
         });
 
         it("Sucesso - Cálculo correto do tipo Conquistador", async() => {
@@ -89,10 +91,9 @@ describe("Gerenciamento de formulários", () => {
                 words: [5, 9, 19, 6, 14, 3, 7, 18, 4, 8]
             });
             
-            expect(result.body).toEqual(expect.objectContaining({
-                statusCode: 200,
-                data: { gamerType: "Conquistador", gamerDescription: "Você é um Conquistador" }
-            }));
+            expect(result.body.message).toBe("");
+            expect(result.body.statusCode).toBe(200);
+            expect(result.body.data.gamerType).toBe("Conquistador");
         });
 
         it("Sucesso - Cálculo correto do tipo Explorador", async() => {
@@ -103,10 +104,9 @@ describe("Gerenciamento de formulários", () => {
                 words: [1, 13, 19, 11, 14, 3, 15, 18, 16, 17]
             });
             
-            expect(result.body).toEqual(expect.objectContaining({
-                statusCode: 200,
-                data: { gamerType: "Explorador", gamerDescription: "Você é um Explorador" }
-            }));
+            expect(result.body.message).toBe("");
+            expect(result.body.statusCode).toBe(200);
+            expect(result.body.data.gamerType).toBe("Explorador");
         });
 
         it("Sucesso - Cálculo correto do tipo Competidor", async() => {
@@ -117,10 +117,9 @@ describe("Gerenciamento de formulários", () => {
                 words: [1, 13, 19, 6, 14, 3, 15, 18, 4, 8]
             });
             
-            expect(result.body).toEqual(expect.objectContaining({
-                statusCode: 200,
-                data: { gamerType: "Competidor", gamerDescription: "Você é um Competidor" }
-            }));
+            expect(result.body.message).toBe("");
+            expect(result.body.statusCode).toBe(200);
+            expect(result.body.data.gamerType).toBe("Competidor");
         });
 
     });

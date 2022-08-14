@@ -5,6 +5,7 @@ import { Words } from "../models/Words";
 import { Traits } from "../models/Trait";
 import AppDataSource from "../data-source";
 import { FormWords } from "../models/FormWords";
+import { GamerTypes } from "../models/GamerTypes";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 (async() => {
@@ -18,6 +19,7 @@ import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity
         const words = XLSX.utils.sheet_to_json(file.Sheets["Words"]);
         const forms = XLSX.utils.sheet_to_json(file.Sheets["Forms"]);
         const formWords = XLSX.utils.sheet_to_json(file.Sheets["FormWords"]);
+        const gamerTypes = XLSX.utils.sheet_to_json(file.Sheets["GamerTypes"]);
 
         // Estrutura adição de traços de personalidade
         const newTraits: Array<QueryDeepPartialEntity<Traits>> = [];
@@ -55,6 +57,17 @@ import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity
         }));
         await AppDataSource.createQueryBuilder().insert()
             .into(FormWords).values(newFormWords).execute();
+
+        // Carrega os tipos de jogadores e suas regras de cálculo
+        const newGamerTypes: Array<QueryDeepPartialEntity<GamerTypes>> = [];
+        gamerTypes.forEach((item: any) => newGamerTypes.push({
+            TraitId: item.TraitId,
+            Name: item.Name,
+            Positive: item.Positive,
+            Description: item.Description
+        }));
+        await AppDataSource.createQueryBuilder().insert()
+            .into(GamerTypes).values(newGamerTypes).execute();
 
         console.log("Seed do banco de dados finalizada com sucesso.")
 

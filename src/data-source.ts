@@ -5,6 +5,7 @@ import { Forms } from "./models/Forms";
 import { Words } from "./models/Words";
 import { Traits } from "./models/Trait";
 import { FormWords } from "./models/FormWords";
+import { GamerTypes } from "./models/GamerTypes";
 
 config({ path: path.join(__dirname, "..", "config", ".env") });
 
@@ -16,7 +17,7 @@ const AppDataSource = new DataSource({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     synchronize: true,
-    entities: [Traits, Words, Forms, FormWords],
+    entities: [Traits, Words, Forms, FormWords, GamerTypes],
     ssl: true,
     extra: {
         ssl: {

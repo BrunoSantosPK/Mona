@@ -3,7 +3,8 @@ import AppDataSource from "../data-source";
 import { Request, Response } from "express";
 import CustomResponse from "../core/response";
 import { FormWords } from "../models/FormWords";
-import { RowQuestionGroup, ReturnGetFormById } from "../types/form";
+import { GamerTypes } from "../models/GamerTypes";
+import { RowQuestionGroup, ReturnGetFormById, ReturnGetGameTypes, GamerTypeCalc } from "../types/form";
 
 export default class FormController {
 
@@ -13,10 +14,8 @@ export default class FormController {
         const { ip, formId, duration, words } = request.body;
 
         try {
-            // Instancia conexão com o banco de dados
-            //await AppDataSource.initialize();
+            // Acessa questionário informado
             const questions = await FormController.getFormById(formId);
-
             if(!questions.success || questions.data == undefined)
                 throw new Error(questions.message);
 
@@ -30,8 +29,13 @@ export default class FormController {
             if(!validConsistence)
                 throw new Error("As respostas não estão consistentes com o questionário.");
 
+            // Recupera regras para cálculo de tipo de jogador
+            const gamerRules = await FormController.getGamerTypes();
+            if(!gamerRules.success || gamerRules.data == undefined)
+                throw new Error("Não foi possível recuperar as regras de cálculo do servidor.");
+
             // Calcula e recupera o principal arquétipo de jogador
-            const resultCalc = BigFive.calculate(questions.data, words);
+            const resultCalc = BigFive.calculate(questions.data, words, gamerRules.data);
             send.setAttr("gamerType", resultCalc.gamerType);
             send.setAttr("gamerDescription", resultCalc.gamerDescription);
 
@@ -40,7 +44,6 @@ export default class FormController {
             send.setMessage(error.message);
 
         } finally {
-            //await AppDataSource.destroy();
             return response.json(send.getJSON());
         }
     }
@@ -50,7 +53,6 @@ export default class FormController {
 
         try {
             // Recupera dados
-            await AppDataSource.initialize();
             const data = await AppDataSource.createQueryBuilder(FormWords, "FormWords")
                 .leftJoinAndSelect("FormWords.WordId", "Words")
                 .leftJoinAndSelect("Words.TraitId", "Traits")
@@ -77,7 +79,35 @@ export default class FormController {
             result.message = error.message;
 
         } finally {
-            await AppDataSource.destroy();
+            return result;
+        }
+    }
+
+    static async getGamerTypes(): Promise<ReturnGetGameTypes> {
+        // Inicializa sistema de retorno
+        const result: ReturnGetGameTypes = { success: true };
+        const send: Array<GamerTypeCalc> = [];
+
+        try {
+            // Recupera dados
+            const data = await AppDataSource.createQueryBuilder(GamerTypes, "GamerTypes").execute();
+
+            // Estrutura dados para serem enviados
+            data.forEach((item: any) => send.push({
+                max: 0,
+                score: 0,
+                gamer: item.GamerTypes_Name,
+                positive: item.GamerTypes_Positive,
+                traitId: item.GamerTypes_TraitId,
+                description: item.GamerTypes_Description
+            }));
+            result.data = send;
+
+        } catch(error: any) {
+            result.success = false;
+            result.message = error.message;
+
+        } finally {
             return result;
         }
     }

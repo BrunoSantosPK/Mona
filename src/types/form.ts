@@ -11,3 +11,18 @@ export type ReturnGetFormById = {
     message?: string,
     data?: Array<RowQuestionGroup>
 }
+
+export type GamerTypeCalc = {
+    traitId: number,
+    positive: boolean,
+    gamer: string,
+    score: number,
+    max: number,
+    description: string
+}
+
+export type ReturnGetGameTypes = {
+    success: boolean,
+    message?: string,
+    data?: Array<GamerTypeCalc>
+}

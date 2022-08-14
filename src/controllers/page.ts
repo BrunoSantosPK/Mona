@@ -22,7 +22,6 @@ export default class PageController {
             const slides = FormViewModel.getSlidesForm(form.data);
 
             // Envia dados para a página
-            //return response.render("pages/form-gamer", {combination: groups, idForm});
             return response.render("pages/simple-form", { slides, idForm });
 
         } catch(error: any) {

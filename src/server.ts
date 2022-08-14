@@ -1,3 +1,4 @@
 import app from "./app";
+import AppDataSource from "./data-source";
 
-app.listen(process.env.PORT || 3030);
+AppDataSource.initialize().then(connect => app.listen(process.env.PORT || 3030));

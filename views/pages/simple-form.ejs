@@ -14,27 +14,33 @@
 
     <body form-id="<%= idForm %>">
 
-        <% slides.forEach((slide, i) => { %>
-            <div class="slide <%= (i == 0) ? '' : 'hide' %>" rule="<%= slide.state %>" id="slide-<%= i %>">
-                <div class="slide-content">
-                    <p><%= slide.text %></p>
-                    <% if(slide.showQuestions) { %>
-                        <% slide.questions.options.forEach((item, j) => { %>
-                            <label for="question-<%= slide.questions.groupId %>">
-                                <input
-                                    type="radio"
-                                    id="word-<%= item.wordId %>"
-                                    name="question-<%= slide.questions.groupId %>"
-                                    word-id="<%= item.wordId %>"
-                                >
-                                <%= item.word %>
-                            </label>
-                        <% }) %>
-                    <% } %>
-                    <div class="button" onclick="action('<%= i %>')"><%= slide.buttonText %></div>
+        <div id="slide-group">
+            <% slides.forEach((slide, i) => { %>
+                <div class="slide <%= (i == 0) ? '' : 'hide' %>" rule="<%= slide.state %>" id="slide-<%= i %>">
+                    <div class="slide-content">
+                        <p><%= slide.text %></p>
+                        <% if(slide.showQuestions) { %>
+                            <% slide.questions.options.forEach((item, j) => { %>
+                                <label for="question-<%= slide.questions.groupId %>">
+                                    <input
+                                        type="radio"
+                                        id="word-<%= item.wordId %>"
+                                        name="question-<%= slide.questions.groupId %>"
+                                        word-id="<%= item.wordId %>"
+                                    >
+                                    <%= item.word %>
+                                </label>
+                            <% }) %>
+                        <% } %>
+                        <div class="button" onclick="action('<%= i %>')"><%= slide.buttonText %></div>
+                    </div>
                 </div>
-            </div>
-        <% }) %>
+            <% }) %>
+        </div>
+
+        <div class="loading hide" id="loading">
+            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        </div>
 
     </body>
 
@@ -67,7 +73,7 @@
             },
             "validate-send": currentId => {
                 const valid = validate(currentId)
-                if(valid) calculate();
+                if(valid) calculate(currentId);
                 else alert("Selecione uma opção para finalizar")
             }
         };
@@ -114,8 +120,37 @@
             }, 800);
         }
 
-        async function calculate() {
+        function createResponseSlide(title, description) {
+            // Cria elementos na página
+            const group = document.getElementById("slide-group");
+            const nextSlide = document.createElement("div");
+            const nextSlideContent = document.createElement("div");
+
+            // Faz o preenchimento dos dados para interação
+            nextSlide.className = "slide hide";
+            nextSlide.id = `slide-${group.children.length}`;
+            nextSlideContent.className = "slide-content";
+
+            // Preenche os dados de visualização
+            const responseTitle = document.createElement("h3");
+            responseTitle.innerHTML = title;
+            nextSlideContent.appendChild(responseTitle);
+            
+            description.split("\n").forEach(text => {
+                let paragraph = document.createElement("p");
+                paragraph.innerHTML = text;
+                nextSlideContent.appendChild(paragraph);
+            });
+
+            nextSlide.appendChild(nextSlideContent);
+            group.appendChild(nextSlide);
+        }
+
+        async function calculate(currentId) {
             try {
+                // Inicia o render
+                document.getElementById("loading").classList.remove("hide");
+
                 // Gerencia os dados para enviar ao servidor
                 let req = await fetch("https://api.ipify.org/?format=json");
                 let res = await req.json();
@@ -139,10 +174,21 @@
                 });
                 res = await req.json();
 
-                console.log(res);
+                // Verifica se a requisição foi executada com sucesso
+                if(res.statusCode != 200)
+                    throw new Error(res.message);
+
+                // Cria o slide de resposta
+                createResponseSlide(res.data.gamerType, res.data.gamerDescription);
+                nextPage(currentId);
 
             } catch(error) {
+                // Informa erro ao usuário
                 alert(error.message);
+
+            } finally {
+                // Fecha o render
+                document.getElementById("loading").classList.add("hide");
             }
         }
 
